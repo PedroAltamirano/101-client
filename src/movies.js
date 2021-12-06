@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 import './style/movies.css'
@@ -19,19 +19,45 @@ import Stack from '@mui/material/Stack';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 
-function createData(id, name, description, duration, genre, actors) {
-  return { id, name, description, duration, genre, actors };
-}
-
-const rows = [
-  createData(1, 'Frozen yoghurt', 'Descripcion 1...', 120, 1, [1, 2]),
-  createData(2, 'Ice cream sandwich', 'Descripcion 2...', 120, 2, [3, 2]),
-  createData(3, 'Eclair', 'Descripcion 3..', 120, 3, [1, 2]),
-  createData(4, 'Cupcake', 'Descripcion 4...', 120, 1, [3, 2]),
-  createData(5, 'Gingerbread', 'Descripcion 5...', 120, 2, [1, 2]),
-];
+const baseApi = 'http://127.0.0.1:3000/api/'
 
 const Movies = () => {
+  const [genres, setGenres] = useState()
+  const [actors, setActors] = useState()
+  const [movies, setMovies] = useState()
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchGenres = async () => {
+      console.log('fetchin...')
+      const res = await fetch(`${baseApi}genres`)
+      const data = await res.json()
+      setGenres(data)
+    }
+
+    const fetchActors = async () => {
+      console.log('fetchin...')
+      const res = await fetch(`${baseApi}actors`)
+      const data = await res.json()
+      setActors(data)
+    }
+
+    const fetchMovies = async () => {
+      console.log('fetchin...')
+      const res = await fetch(`${baseApi}movies`)
+      const data = await res.json()
+      setMovies(data)
+      setLoading(false)
+    }
+
+    if (!genres || genres.length < 1) fetchGenres()
+    if (!actors || actors.length < 1) fetchActors()
+    if (!movies || movies.length < 1) fetchMovies()
+    // return () => {
+    //   cleanup
+    // }
+  }, [genres, actors, movies])
+
   const [detail, setDetail] = useState(false)
   const [form, setForm] = useState(false)
   const [data, setData] = useState()
@@ -66,28 +92,34 @@ const Movies = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
-            <TableRow
-              key={row.id}
-              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-            >
-              <TableCell component="th" scope="row">
-                {row.name}
-              </TableCell>
-              <TableCell>{row.duration}</TableCell>
-              <TableCell>{row.genre}</TableCell>
-              <TableCell>
-                <Stack spacing={2} direction="row">
-                  <IconButton aria-label="ver película" onClick={() => openDetail(row)}>
-                    <VisibilityIcon />
-                  </IconButton>
-                  <IconButton aria-label="editar película" onClick={() => openForm(row)}>
-                    <EditIcon />
-                  </IconButton>
-                </Stack>
-              </TableCell>
-            </TableRow>
-          ))}
+          {
+            loading ?
+              <p>cargando...</p> :
+              movies && movies.length ?
+                movies.map((movie) => (
+                  <TableRow
+                    key={movie.id}
+                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                  >
+                    <TableCell component="th" scope="row">
+                      {movie.name}
+                    </TableCell>
+                    <TableCell>{movie.duration}</TableCell>
+                    <TableCell>{movie.genre}</TableCell>
+                    <TableCell>
+                      <Stack spacing={2} direction="row">
+                        <IconButton aria-label="ver película" onClick={() => openDetail(movie)}>
+                          <VisibilityIcon />
+                        </IconButton>
+                        <IconButton aria-label="editar película" onClick={() => openForm(movie)}>
+                          <EditIcon />
+                        </IconButton>
+                      </Stack>
+                    </TableCell>
+                  </TableRow>
+                )) :
+                <div>sin datos</div>
+          }
         </TableBody>
       </BaseTable>
       <Stack direction='row-reverse' sx={{ mt: 2 }}>
