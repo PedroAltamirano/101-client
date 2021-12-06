@@ -1,89 +1,100 @@
 import * as React from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import './style/movies.css'
+import BaseTable from './components/baseTable';
+import MovieDetail from './components/movieDetail';
+import MovieForm from './components/movieForm';
 
-import { Typography, IconButton, Button } from '@mui/material';
+import { IconButton, Button } from '@mui/material';
 
-import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
 
 import Stack from '@mui/material/Stack';
 
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 
-function createData(id, name, description, duration, genre) {
-  return { id, name, description, duration, genre };
+function createData(id, name, description, duration, genre, actors) {
+  return { id, name, description, duration, genre, actors };
 }
 
 const rows = [
-  createData(1, 'Frozen yoghurt', 'Descripcion 1...', 120, 'genero 1'),
-  createData(2, 'Ice cream sandwich', 'Descripcion 2...', 120, 'genero 2'),
-  createData(3, 'Eclair', 'Descripcion 3..', 120, 'genero 3'),
-  createData(4, 'Cupcake', 'Descripcion 4...', 120, 'genero 1'),
-  createData(5, 'Gingerbread', 'Descripcion 5...', 120, 'genero 2'),
+  createData(1, 'Frozen yoghurt', 'Descripcion 1...', 120, 1, [1, 2]),
+  createData(2, 'Ice cream sandwich', 'Descripcion 2...', 120, 2, [3, 2]),
+  createData(3, 'Eclair', 'Descripcion 3..', 120, 3, [1, 2]),
+  createData(4, 'Cupcake', 'Descripcion 4...', 120, 1, [3, 2]),
+  createData(5, 'Gingerbread', 'Descripcion 5...', 120, 2, [1, 2]),
 ];
 
 const Movies = () => {
+  const [detail, setDetail] = useState(false)
+  const [form, setForm] = useState(false)
+  const [data, setData] = useState()
 
-  const openDetail = data => { console.log('detail') }
-  const openNew = () => { console.log('new') }
-  const openEdit = data => { console.log('edit') }
+  const openDetail = data => {
+    setData(data)
+    setDetail(true)
+  }
+  const openForm = data => {
+    setData(data)
+    setForm(true)
+  }
+
+  const closeDetail = () => {
+    setDetail(false)
+    setData(null)
+  }
+  const closeForm = () => {
+    setForm(false)
+    setData(null)
+  }
 
   return (
     <>
-      <Stack spacing={2} direction="row" justifyContent="space-between">
-        <Typography variant="h2" component='h2' mt={2}>Películas</Typography>
-        <IconButton aria-label="nueva película" size="large" onClick={openNew}>
-          <AddIcon fontSize="inherit" />
-        </IconButton>
-      </Stack>
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell>Nombre</TableCell>
-              <TableCell>Duración (minutos)</TableCell>
-              <TableCell>Género</TableCell>
-              <TableCell>Acciones</TableCell>
+      <BaseTable title='Películas' addAction={openForm}>
+        <TableHead>
+          <TableRow>
+            <TableCell>Nombre</TableCell>
+            <TableCell>Duración (minutos)</TableCell>
+            <TableCell>Género</TableCell>
+            <TableCell>Acciones</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {rows.map((row) => (
+            <TableRow
+              key={row.id}
+              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+            >
+              <TableCell component="th" scope="row">
+                {row.name}
+              </TableCell>
+              <TableCell>{row.duration}</TableCell>
+              <TableCell>{row.genre}</TableCell>
+              <TableCell>
+                <Stack spacing={2} direction="row">
+                  <IconButton aria-label="ver película" onClick={() => openDetail(row)}>
+                    <VisibilityIcon />
+                  </IconButton>
+                  <IconButton aria-label="editar película" onClick={() => openForm(row)}>
+                    <EditIcon />
+                  </IconButton>
+                </Stack>
+              </TableCell>
             </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map((row) => (
-              <TableRow
-                key={row.id}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-              >
-                <TableCell component="th" scope="row">
-                  {row.name}
-                </TableCell>
-                <TableCell>{row.duration}</TableCell>
-                <TableCell>{row.genre}</TableCell>
-                <TableCell>
-                  <Stack spacing={2} direction="row">
-                    <IconButton aria-label="ver película" onClick={row => openDetail(row)}>
-                      <VisibilityIcon />
-                    </IconButton>
-                    <IconButton aria-label="editar película" onClick={row => openEdit(row)}>
-                      <EditIcon />
-                    </IconButton>
-                  </Stack>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+          ))}
+        </TableBody>
+      </BaseTable>
       <Stack direction='row-reverse' sx={{ mt: 2 }}>
         <Link to='/actores'><Button variant="outlined">Actores</Button></Link>
       </Stack>
+      <MovieDetail data={data} open={detail} handleClose={closeDetail} />
+      <MovieForm data={data} open={form} handleClose={closeForm} />
     </>
   )
 }
