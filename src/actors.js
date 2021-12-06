@@ -1,8 +1,9 @@
 import * as React from 'react';
+import { Link } from 'react-router-dom';
 
 import './style/actors.css'
 
-import { Typography, IconButton } from '@mui/material';
+import { Typography, IconButton, Button } from '@mui/material';
 
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -77,6 +78,9 @@ const Actors = () => {
           </TableBody>
         </Table>
       </TableContainer>
+      <Stack direction='row-reverse' sx={{ mt: 2 }}>
+        <Link to='/'><Button variant="outlined">Películas</Button></Link>
+      </Stack>
     </>
   )
 }

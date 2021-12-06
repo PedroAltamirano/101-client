@@ -1,8 +1,9 @@
 import * as React from 'react';
+import { Link } from 'react-router-dom';
 
 import './style/movies.css'
 
-import { Typography, IconButton } from '@mui/material';
+import { Typography, IconButton, Button } from '@mui/material';
 
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -80,6 +81,9 @@ const Movies = () => {
           </TableBody>
         </Table>
       </TableContainer>
+      <Stack direction='row-reverse' sx={{ mt: 2 }}>
+        <Link to='/actores'><Button variant="outlined">Actores</Button></Link>
+      </Stack>
     </>
   )
 }
