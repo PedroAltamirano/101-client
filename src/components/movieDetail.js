@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
@@ -6,10 +7,7 @@ import Modal from '@mui/material/Modal';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
 
 const style = {
   position: 'absolute',
@@ -23,41 +21,35 @@ const style = {
   p: 4,
 };
 
-function createData(id, name, age) {
-  return { id, name, age };
-}
-
-const rows = [
-  createData(1, 'Nombre Apell 1', 30),
-  createData(2, 'Nombre Apell 1', 30),
-  createData(3, 'Nombre Apell 1', 30),
-  createData(4, 'Nombre Apell 1', 30),
-  createData(5, 'Nombre Apell 1', 30),
-];
-
-const ActorsTable = () => {
-  return (
-    <Table size='small' aria-label="actors table">
-      <TableBody>
-        {rows.map((row) => (
-          <TableRow
-            key={row.id}
-
-          >
-            <TableCell>{row.name}</TableCell>
-            <TableCell align="right">{row.age}</TableCell>
+const ActorsTable = actors => (
+  <Table size='small' aria-label="actors table">
+    <TableBody>
+      {
+        actors && actors.map((actor) => (
+          <TableRow key={actor.id}>
+            <TableCell>{actor.name}</TableCell>
+            <TableCell align="right">{actor.age}</TableCell>
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  );
-}
+        ))
+      }
+    </TableBody>
+  </Table>
+)
 
-const MovieDetail = ({ data, open, handleClose }) => {
+const MovieDetail = ({ data, actors, open, handleClose }) => {
+  const [filtered, setFiltered] = useState([])
+  if (data && data.actors.length > 0 && filtered.length < 1) setFiltered(actors.filter(actor => data.actors.includes(actor.id)))
+
+  const close = () => {
+    setFiltered([])
+    handleClose()
+    return
+  }
+
   return (
     <Modal
       open={open}
-      onClose={handleClose}
+      onClose={close}
       aria-labelledby="modal-detail-movie-title"
       aria-describedby="modal-detail-movie-description"
     >
@@ -77,7 +69,7 @@ const MovieDetail = ({ data, open, handleClose }) => {
         <Typography id="modal-detail-movie-actors-label" variant='h6' fontWeight='bold' sx={{ mt: 2 }}>
           Actores
         </Typography>
-        <ActorsTable />
+        {ActorsTable(filtered)}
       </Box>
     </Modal>
   )

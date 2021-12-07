@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 import './style/actors.css'
@@ -17,19 +17,27 @@ import Stack from '@mui/material/Stack';
 
 import EditIcon from '@mui/icons-material/Edit';
 
-function createData(id, img, name, age) {
-  return { id, img, name, age };
-}
-
-const rows = [
-  createData(1, 'foto...', 'Nombre Apell 1', 30),
-  createData(2, 'foto...', 'Nombre Apell 1', 30),
-  createData(3, 'foto...', 'Nombre Apell 1', 30),
-  createData(4, 'foto...', 'Nombre Apell 1', 30),
-  createData(5, 'foto...', 'Nombre Apell 1', 30),
-];
+const baseApi = 'http://127.0.0.1:3000/api/'
 
 const Actors = () => {
+  const [actors, setActors] = useState()
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchActors = async () => {
+      const res = await fetch(`${baseApi}actors`)
+      const data = await res.json()
+      setActors(data)
+      setLoading(false)
+    }
+
+    if (!actors || actors.length < 1) fetchActors()
+
+    // return () => {
+    //   cleanup
+    // }
+  }, [actors])
+
   const [form, setForm] = useState(false)
   const [data, setData] = useState()
 
@@ -55,25 +63,31 @@ const Actors = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
-            <TableRow
-              key={row.id}
-              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-            >
-              <TableCell component="th" scope="row">
-                {row.img}
-              </TableCell>
-              <TableCell>{row.name}</TableCell>
-              <TableCell>{row.age}</TableCell>
-              <TableCell>
-                <Stack spacing={2} direction="row">
-                  <IconButton aria-label="editar actor" onClick={() => openForm(row)}>
-                    <EditIcon />
-                  </IconButton>
-                </Stack>
-              </TableCell>
-            </TableRow>
-          ))}
+          {
+            loading ?
+              <p>cargando...</p> :
+              actors && actors.length ?
+                actors.map((actor) => (
+                  <TableRow
+                    key={actor.id}
+                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                  >
+                    <TableCell component="th" scope="row">
+                      {actor.img}
+                    </TableCell>
+                    <TableCell>{actor.name}</TableCell>
+                    <TableCell>{actor.age}</TableCell>
+                    <TableCell>
+                      <Stack spacing={2} direction="row">
+                        <IconButton aria-label="editar actor" onClick={() => openForm(actor)}>
+                          <EditIcon />
+                        </IconButton>
+                      </Stack>
+                    </TableCell>
+                  </TableRow>
+                )) :
+                <p>Sin datos...</p>
+          }
         </TableBody>
       </BaseTable>
       <Stack direction='row-reverse' sx={{ mt: 2 }}>

@@ -24,7 +24,7 @@ const style = {
   p: 4,
 };
 
-const MovieForm = ({ data, open, handleClose }) => {
+const MovieForm = ({ data, genres, actors, open, handleClose }) => {
   const initialState = { name: '', description: '', duration: '', genre: '', actors: [] }
   const [form, setForm] = useState(initialState)
 
@@ -84,9 +84,11 @@ const MovieForm = ({ data, open, handleClose }) => {
               value={form.genre}
               onChange={handleInput}
             >
-              <MenuItem value={1}>Género 1</MenuItem>
-              <MenuItem value={2}>Género 2</MenuItem>
-              <MenuItem value={3}>Género 3</MenuItem>
+              {
+                genres && genres.map(genre => (
+                  <MenuItem key={genre.id} value={genre.id}>{genre.name}</MenuItem>
+                ))
+              }
             </Select>
           </FormControl>
           <TextField
@@ -108,9 +110,11 @@ const MovieForm = ({ data, open, handleClose }) => {
               value={form.actors}
               onChange={handleInput}
             >
-              <MenuItem value={1}>Ten</MenuItem>
-              <MenuItem value={2}>Twenty</MenuItem>
-              <MenuItem value={3}>Thirty</MenuItem>
+              {
+                actors && actors.map(actor => (
+                  <MenuItem key={actor.id} value={actor.id}>{actor.name}</MenuItem>
+                ))
+              }
             </Select>
           </FormControl>
         </Box>

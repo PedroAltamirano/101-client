@@ -29,21 +29,20 @@ const Movies = () => {
 
   useEffect(() => {
     const fetchGenres = async () => {
-      console.log('fetchin...')
       const res = await fetch(`${baseApi}genres`)
       const data = await res.json()
       setGenres(data)
+      setLoading(false)
     }
 
     const fetchActors = async () => {
-      console.log('fetchin...')
       const res = await fetch(`${baseApi}actors`)
       const data = await res.json()
       setActors(data)
+      setLoading(false)
     }
 
     const fetchMovies = async () => {
-      console.log('fetchin...')
       const res = await fetch(`${baseApi}movies`)
       const data = await res.json()
       setMovies(data)
@@ -53,6 +52,7 @@ const Movies = () => {
     if (!genres || genres.length < 1) fetchGenres()
     if (!actors || actors.length < 1) fetchActors()
     if (!movies || movies.length < 1) fetchMovies()
+
     // return () => {
     //   cleanup
     // }
@@ -105,7 +105,7 @@ const Movies = () => {
                       {movie.name}
                     </TableCell>
                     <TableCell>{movie.duration}</TableCell>
-                    <TableCell>{movie.genre}</TableCell>
+                    <TableCell>{genres.filter(genre => genre.id === movie.genre)[0].name}</TableCell>
                     <TableCell>
                       <Stack spacing={2} direction="row">
                         <IconButton aria-label="ver película" onClick={() => openDetail(movie)}>
@@ -125,8 +125,8 @@ const Movies = () => {
       <Stack direction='row-reverse' sx={{ mt: 2 }}>
         <Link to='/actores'><Button variant="outlined">Actores</Button></Link>
       </Stack>
-      <MovieDetail data={data} open={detail} handleClose={closeDetail} />
-      <MovieForm data={data} open={form} handleClose={closeForm} />
+      <MovieDetail data={data} actors={actors} open={detail} handleClose={closeDetail} />
+      <MovieForm data={data} genres={genres} actors={actors} open={form} handleClose={closeForm} />
     </>
   )
 }
