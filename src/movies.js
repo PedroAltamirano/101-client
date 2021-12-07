@@ -2,6 +2,8 @@ import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
+import { baseAPI } from './config/api';
+
 import './style/movies.css'
 import BaseTable from './components/baseTable';
 import MovieDetail from './components/movieDetail';
@@ -19,36 +21,34 @@ import Stack from '@mui/material/Stack';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 
-const baseApi = 'http://127.0.0.1:3000/api/'
-
 const Movies = () => {
   const [genres, setGenres] = useState()
   const [actors, setActors] = useState()
   const [movies, setMovies] = useState()
   const [loading, setLoading] = useState(true)
 
+  const fetchGenres = async () => {
+    const res = await fetch(`${baseAPI}genres`)
+    const data = await res.json()
+    setGenres(data)
+    setLoading(false)
+  }
+
+  const fetchActors = async () => {
+    const res = await fetch(`${baseAPI}actors`)
+    const data = await res.json()
+    setActors(data)
+    setLoading(false)
+  }
+
+  const fetchMovies = async () => {
+    const res = await fetch(`${baseAPI}movies`)
+    const data = await res.json()
+    setMovies(data)
+    setLoading(false)
+  }
+
   useEffect(() => {
-    const fetchGenres = async () => {
-      const res = await fetch(`${baseApi}genres`)
-      const data = await res.json()
-      setGenres(data)
-      setLoading(false)
-    }
-
-    const fetchActors = async () => {
-      const res = await fetch(`${baseApi}actors`)
-      const data = await res.json()
-      setActors(data)
-      setLoading(false)
-    }
-
-    const fetchMovies = async () => {
-      const res = await fetch(`${baseApi}movies`)
-      const data = await res.json()
-      setMovies(data)
-      setLoading(false)
-    }
-
     if (!genres || genres.length < 1) fetchGenres()
     if (!actors || actors.length < 1) fetchActors()
     if (!movies || movies.length < 1) fetchMovies()
@@ -134,7 +134,7 @@ const Movies = () => {
         <Link to='/actores'><Button variant="outlined">Actores</Button></Link>
       </Stack>
       <MovieDetail data={data} actors={actors} open={detail} handleClose={closeDetail} />
-      <MovieForm data={data} genres={genres} actors={actors} open={form} handleClose={closeForm} />
+      <MovieForm data={data} genres={genres} actors={actors} open={form} handleClose={closeForm} fetchMovies={fetchMovies} />
     </>
   )
 }

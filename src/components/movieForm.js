@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 
+import { baseAPI } from '../config/api'
+
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -24,29 +26,66 @@ const style = {
   p: 4,
 };
 
-const MovieForm = ({ data, genres, actors, open, handleClose }) => {
+const MovieForm = ({ data, genres, actors, open, handleClose, fetchMovies }) => {
   const initialState = { name: '', description: '', duration: '', genre_id: '', actors_id: [] }
   const [form, setForm] = useState(initialState)
-  const [actorsId, setActorsId] = useState([])
 
   useEffect(() => {
     if (data) {
-      setForm(data)
-      setActorsId(data.actors_id.split(','))
+      setForm({ ...data, actors_id: data.actors_id.split(',') })
     } else {
       setForm(initialState)
-      setActorsId([])
     }
   }, [data])
 
   const handleInput = event => {
-    console.log(event.target)
     setForm({ ...form, [event.target.name]: event.target.value })
     return
   }
 
+  const validateForm = () => {
+    for (const key in form) {
+      if (form[key] === '') return true
+    }
+    return false
+  }
+
   const handleSubmit = () => {
-    console.log(form)
+    if (validateForm()) {
+      alert('datos incompletos')
+      return
+    }
+
+    let url = `${baseAPI}movie`
+    const data = {
+      ...form,
+      actors_id: form.actors_id.join()
+    }
+
+    let send = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    }
+
+    if (data.id) {
+      url = `${baseAPI}movie/${data.id || ''}`
+      send = {
+        ...send,
+        method: 'PUT',
+      }
+    }
+
+    fetch(url, send)
+      .then(res => res.json())
+      .then(data => {
+        fetchMovies()
+        setForm(initialState)
+        handleClose()
+      })
+      .catch(err => console.log(err))
   }
 
   return (
@@ -88,7 +127,7 @@ const MovieForm = ({ data, genres, actors, open, handleClose }) => {
             <InputLabel id="genre-label">Género</InputLabel>
             <Select
               id="genero"
-              name="genre"
+              name="genre_id"
               labelId="genre-label"
               label="Género"
               value={form.genre_id}
@@ -115,10 +154,10 @@ const MovieForm = ({ data, genres, actors, open, handleClose }) => {
             <Select
               multiple
               id="actores"
-              name="actors"
+              name="actors_id"
               labelId="actors-label"
               label="Actors"
-              value={actorsId}
+              value={form.actors_id}
               onChange={handleInput}
             >
               {
