@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 
+import { baseAPI } from '../config/api';
+
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -20,7 +22,7 @@ const style = {
   p: 4,
 };
 
-const ActorForm = ({ data, open, handleClose }) => {
+const ActorForm = ({ data, open, handleClose, fetchActors }) => {
   const initialState = { name: '', age: '', img: '' }
   const [form, setForm] = useState(initialState)
 
@@ -30,13 +32,53 @@ const ActorForm = ({ data, open, handleClose }) => {
   }, [data])
 
   const handleInput = event => {
-    console.log(event.target)
     setForm({ ...form, [event.target.name]: event.target.value })
     return
   }
 
+  const validateForm = () => {
+    for (const key in form) {
+      if (form[key] === '') return true
+    }
+    return false
+  }
+
   const handleSubmit = () => {
-    console.log(form)
+    if (validateForm()) {
+      alert('datos incompletos')
+      return
+    }
+
+    let url = `${baseAPI}actor`
+    const data = {
+      ...form,
+      // img: form.actors_id.join()
+    }
+
+    let send = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    }
+
+    if (data.id) {
+      url = `${baseAPI}actor/${data.id || ''}`
+      send = {
+        ...send,
+        method: 'PUT',
+      }
+    }
+
+    fetch(url, send)
+      .then(res => res.json())
+      .then(data => {
+        fetchActors()
+        setForm(initialState)
+        handleClose()
+      })
+      .catch(err => console.log(err))
   }
 
   return (
@@ -73,6 +115,14 @@ const ActorForm = ({ data, open, handleClose }) => {
             label="Edad"
             sx={{ my: 1 }}
             value={form.age}
+            onChange={handleInput} />
+          <TextField
+            fullWidth
+            id="img"
+            name="img"
+            label="img"
+            sx={{ my: 1 }}
+            value={form.img}
             onChange={handleInput} />
         </Box>
         <Stack direction='row-reverse' gap={2}>

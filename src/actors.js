@@ -2,6 +2,8 @@ import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
+import { baseAPI } from './config/api'
+
 import './style/actors.css'
 import BaseTable from './components/baseTable';
 import ActorForm from './components/actorForm';
@@ -17,20 +19,18 @@ import Stack from '@mui/material/Stack';
 
 import EditIcon from '@mui/icons-material/Edit';
 
-const baseApi = 'http://127.0.0.1:3000/api/'
-
 const Actors = () => {
   const [actors, setActors] = useState()
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    const fetchActors = async () => {
-      const res = await fetch(`${baseApi}actors`)
-      const data = await res.json()
-      setActors(data)
-      setLoading(false)
-    }
+  const fetchActors = async () => {
+    const res = await fetch(`${baseAPI}actors`)
+    const data = await res.json()
+    setActors(data)
+    setLoading(false)
+  }
 
+  useEffect(() => {
     if (!actors || actors.length < 1) fetchActors()
 
     // return () => {
@@ -101,7 +101,7 @@ const Actors = () => {
       <Stack direction='row-reverse' sx={{ mt: 2 }}>
         <Link to='/'><Button variant="outlined">Películas</Button></Link>
       </Stack>
-      <ActorForm data={data} open={form} handleClose={closeForm} />
+      <ActorForm data={data} open={form} handleClose={closeForm} fetchActors={fetchActors} />
     </>
   )
 }
