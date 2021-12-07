@@ -35,6 +35,10 @@ const ActorForm = ({ data, open, handleClose }) => {
     return
   }
 
+  const handleSubmit = () => {
+    console.log(form)
+  }
+
   return (
     <Modal
       open={open}
@@ -72,8 +76,8 @@ const ActorForm = ({ data, open, handleClose }) => {
             onChange={handleInput} />
         </Box>
         <Stack direction='row-reverse' gap={2}>
-          <Button variant='contained' color='primary'>Guardar</Button>
-          <Button variant='contained' color='error'>Cancelar</Button>
+          <Button variant='contained' color='primary' onClick={handleSubmit}>Guardar</Button>
+          <Button variant='contained' color='error' onClick={handleClose}>Cancelar</Button>
         </Stack>
       </Box>
     </Modal>

@@ -25,18 +25,28 @@ const style = {
 };
 
 const MovieForm = ({ data, genres, actors, open, handleClose }) => {
-  const initialState = { name: '', description: '', duration: '', genre: '', actors: [] }
+  const initialState = { name: '', description: '', duration: '', genre_id: '', actors_id: [] }
   const [form, setForm] = useState(initialState)
+  const [actorsId, setActorsId] = useState([])
 
   useEffect(() => {
-    if (data) setForm(data);
-    else setForm(initialState)
+    if (data) {
+      setForm(data)
+      setActorsId(data.actors_id.split(','))
+    } else {
+      setForm(initialState)
+      setActorsId([])
+    }
   }, [data])
 
   const handleInput = event => {
     console.log(event.target)
     setForm({ ...form, [event.target.name]: event.target.value })
     return
+  }
+
+  const handleSubmit = () => {
+    console.log(form)
   }
 
   return (
@@ -81,11 +91,12 @@ const MovieForm = ({ data, genres, actors, open, handleClose }) => {
               name="genre"
               labelId="genre-label"
               label="Género"
-              value={form.genre}
+              value={form.genre_id}
               onChange={handleInput}
             >
               {
-                genres && genres.map(genre => (
+                genres &&
+                genres.map(genre => (
                   <MenuItem key={genre.id} value={genre.id}>{genre.name}</MenuItem>
                 ))
               }
@@ -107,11 +118,12 @@ const MovieForm = ({ data, genres, actors, open, handleClose }) => {
               name="actors"
               labelId="actors-label"
               label="Actors"
-              value={form.actors}
+              value={actorsId}
               onChange={handleInput}
             >
               {
-                actors && actors.map(actor => (
+                actors &&
+                actors.map(actor => (
                   <MenuItem key={actor.id} value={actor.id}>{actor.name}</MenuItem>
                 ))
               }
@@ -119,8 +131,8 @@ const MovieForm = ({ data, genres, actors, open, handleClose }) => {
           </FormControl>
         </Box>
         <Stack direction='row-reverse' gap={2}>
-          <Button variant='contained' color='primary'>Guardar</Button>
-          <Button variant='contained' color='error'>Cancelar</Button>
+          <Button variant='contained' color='primary' onClick={handleSubmit}>Guardar</Button>
+          <Button variant='contained' color='error' onClick={handleClose}>Cancelar</Button>
         </Stack>
       </Box>
     </Modal>

@@ -25,7 +25,8 @@ const ActorsTable = actors => (
   <Table size='small' aria-label="actors table">
     <TableBody>
       {
-        actors && actors.map((actor) => (
+        actors &&
+        actors.map((actor) => (
           <TableRow key={actor.id}>
             <TableCell>{actor.name}</TableCell>
             <TableCell align="right">{actor.age}</TableCell>
@@ -38,7 +39,8 @@ const ActorsTable = actors => (
 
 const MovieDetail = ({ data, actors, open, handleClose }) => {
   const [filtered, setFiltered] = useState([])
-  if (data && data.actors.length > 0 && filtered.length < 1) setFiltered(actors.filter(actor => data.actors.includes(actor.id)))
+  const actors_id = data?.actors_id || []
+  if (data && actors_id.length > 0 && filtered.length < 1) setFiltered(actors.filter(actor => actors_id.includes(actor.id)))
 
   const close = () => {
     setFiltered([])
