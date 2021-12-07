@@ -94,7 +94,11 @@ const Movies = () => {
         <TableBody>
           {
             loading ?
-              <p>cargando...</p> :
+              <TableRow>
+                <TableCell align="center" colSpan={4}>
+                  cargando...
+                </TableCell>
+              </TableRow> :
               movies && movies.length ?
                 movies.map((movie) => (
                   <TableRow
@@ -105,7 +109,7 @@ const Movies = () => {
                       {movie.name}
                     </TableCell>
                     <TableCell>{movie.duration}</TableCell>
-                    <TableCell>{genres.filter(genre => genre.id === movie.genre)[0].name}</TableCell>
+                    <TableCell>{genres.filter(genre => genre.id === movie.genre_id)[0].name}</TableCell>
                     <TableCell>
                       <Stack spacing={2} direction="row">
                         <IconButton aria-label="ver película" onClick={() => openDetail(movie)}>
@@ -118,7 +122,11 @@ const Movies = () => {
                     </TableCell>
                   </TableRow>
                 )) :
-                <div>sin datos</div>
+                <TableRow>
+                  <TableCell align="center" colSpan={4}>
+                    Sin datos...
+                  </TableCell>
+                </TableRow>
           }
         </TableBody>
       </BaseTable>

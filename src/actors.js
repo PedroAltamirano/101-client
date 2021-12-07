@@ -65,7 +65,11 @@ const Actors = () => {
         <TableBody>
           {
             loading ?
-              <p>cargando...</p> :
+              <TableRow>
+                <TableCell align="center" colSpan={4}>
+                  cargando...
+                </TableCell>
+              </TableRow> :
               actors && actors.length ?
                 actors.map((actor) => (
                   <TableRow
@@ -86,7 +90,11 @@ const Actors = () => {
                     </TableCell>
                   </TableRow>
                 )) :
-                <p>Sin datos...</p>
+                <TableRow>
+                  <TableCell align="center" colSpan={4}>
+                    Sin datos...
+                  </TableCell>
+                </TableRow>
           }
         </TableBody>
       </BaseTable>
