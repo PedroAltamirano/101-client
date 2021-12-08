@@ -38,6 +38,11 @@ const MovieForm = ({ data, genres, actors, open, handleClose, fetchMovies }) => 
     }
   }, [data])
 
+  const close = () => {
+    setForm(initialState)
+    handleClose()
+  }
+
   const handleInput = event => {
     setForm({ ...form, [event.target.name]: event.target.value })
     return
@@ -91,7 +96,7 @@ const MovieForm = ({ data, genres, actors, open, handleClose, fetchMovies }) => 
   return (
     <Modal
       open={open}
-      onClose={handleClose}
+      onClose={close}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
@@ -171,7 +176,7 @@ const MovieForm = ({ data, genres, actors, open, handleClose, fetchMovies }) => 
         </Box>
         <Stack direction='row-reverse' gap={2}>
           <Button variant='contained' color='primary' onClick={handleSubmit}>Guardar</Button>
-          <Button variant='contained' color='error' onClick={handleClose}>Cancelar</Button>
+          <Button variant='contained' color='error' onClick={close}>Cancelar</Button>
         </Stack>
       </Box>
     </Modal>
