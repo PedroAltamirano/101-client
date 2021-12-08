@@ -24,8 +24,6 @@ const style = {
   p: 4,
 };
 
-const getImageUrl = name => `${baseURL}uploads/${name}`
-
 const ActorForm = ({ data, open, handleClose, fetchActors }) => {
   const initialState = { name: '', age: '', img: '', image: '', preview: '' }
   const [form, setForm] = useState(initialState)
@@ -161,7 +159,7 @@ const ActorForm = ({ data, open, handleClose, fetchActors }) => {
             <ImageList sx={{ width: '50%', height: 'auto', mx: 'auto' }} cols={1}>
               <ImageListItem>
                 <img
-                  src={getImageUrl(form.img)}
+                  src={form.img}
                   alt={form.name}
                   loading="lazy"
                 />

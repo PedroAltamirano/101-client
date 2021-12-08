@@ -20,8 +20,6 @@ import Stack from '@mui/material/Stack';
 
 import EditIcon from '@mui/icons-material/Edit';
 
-const getImageUrl = name => `${baseURL}uploads/${name}`
-
 const Actors = () => {
   const [actors, setActors] = useState()
   const [loading, setLoading] = useState(true)
@@ -80,7 +78,7 @@ const Actors = () => {
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell component="th" scope="row">
-                      <Avatar alt={actor.name} src={getImageUrl(actor.img)} />
+                      <Avatar alt={actor.name} src={actor.img} />
                     </TableCell>
                     <TableCell>{actor.name}</TableCell>
                     <TableCell>{actor.age}</TableCell>

@@ -109,7 +109,7 @@ const Movies = () => {
                       {movie.name}
                     </TableCell>
                     <TableCell>{movie.duration}</TableCell>
-                    <TableCell>{genres.filter(genre => genre.id === movie.genre_id)[0].name}</TableCell>
+                    <TableCell>{genres?.filter(genre => genre.id === movie.genre_id)[0].name || ''}</TableCell>
                     <TableCell>
                       <Stack spacing={2} direction="row">
                         <IconButton aria-label="ver película" onClick={() => openDetail(movie)}>
