@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 
-import { baseAPI } from '../config/api';
+import { baseURL, baseAPI } from '../config/api';
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -9,6 +9,8 @@ import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import { Stack } from '@mui/material';
 import TextField from '@mui/material/TextField';
+import ImageList from '@mui/material/ImageList';
+import ImageListItem from '@mui/material/ImageListItem';
 
 const style = {
   position: 'absolute',
@@ -22,8 +24,10 @@ const style = {
   p: 4,
 };
 
+const getImageUrl = name => `${baseURL}uploads/${name}`
+
 const ActorForm = ({ data, open, handleClose, fetchActors }) => {
-  const initialState = { name: '', age: '', img: '' }
+  const initialState = { name: '', age: '', img: '', image: '', preview: '' }
   const [form, setForm] = useState(initialState)
 
   useEffect(() => {
@@ -31,14 +35,43 @@ const ActorForm = ({ data, open, handleClose, fetchActors }) => {
     else setForm(initialState)
   }, [data])
 
+  const close = () => {
+    setForm(initialState)
+    handleClose()
+  }
+
   const handleInput = event => {
     setForm({ ...form, [event.target.name]: event.target.value })
     return
   }
 
+  const handleImage = event => {
+    let reader = new FileReader();
+    let file = event.target.files[0];
+
+    reader.onloadend = () => {
+      setForm({
+        ...form,
+        img: '',
+        image: file,
+        preview: reader.result
+      })
+    }
+
+    reader.readAsDataURL(file)
+  }
+
   const validateForm = () => {
     for (const key in form) {
-      if (form[key] === '') return true
+      if (key !== 'preview' && form.id) {
+        if (key !== 'image') {
+          if (form[key] === '') return true
+        }
+      } else {
+        if (key !== 'img') {
+          if (form[key] === '') return true
+        }
+      }
     }
     return false
   }
@@ -50,21 +83,20 @@ const ActorForm = ({ data, open, handleClose, fetchActors }) => {
     }
 
     let url = `${baseAPI}actor`
-    const data = {
-      ...form,
-      // img: form.actors_id.join()
-    }
+
+    let formData = new FormData();
+    formData.append('image', form.image);
+    formData.append("name", form.name);
+    formData.append('age', form.age);
+    formData.append('img', form.img);
 
     let send = {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
+      body: formData
     }
 
-    if (data.id) {
-      url = `${baseAPI}actor/${data.id || ''}`
+    if (form.id) {
+      url = `${baseAPI}actor/${form.id}`
       send = {
         ...send,
         method: 'PUT',
@@ -84,7 +116,7 @@ const ActorForm = ({ data, open, handleClose, fetchActors }) => {
   return (
     <Modal
       open={open}
-      onClose={handleClose}
+      onClose={close}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
@@ -116,18 +148,48 @@ const ActorForm = ({ data, open, handleClose, fetchActors }) => {
             sx={{ my: 1 }}
             value={form.age}
             onChange={handleInput} />
-          <TextField
+          {/* <TextField
             fullWidth
             id="img"
             name="img"
             label="img"
             sx={{ my: 1 }}
             value={form.img}
-            onChange={handleInput} />
+            onChange={handleInput} /> */}
+          {
+            form.img &&
+            <ImageList sx={{ width: '50%', height: 'auto', mx: 'auto' }} cols={1}>
+              <ImageListItem>
+                <img
+                  src={getImageUrl(form.img)}
+                  alt={form.name}
+                  loading="lazy"
+                />
+              </ImageListItem>
+            </ImageList>
+          }
+          {
+            form.preview &&
+            <ImageList sx={{ width: '50%', height: 'auto', mx: 'auto' }} cols={1}>
+              <ImageListItem>
+                <img
+                  src={form.preview}
+                  alt='image preview'
+                  loading="lazy"
+                />
+              </ImageListItem>
+            </ImageList>
+          }
+          <input
+            id="image"
+            name="image"
+            type="file"
+            accept="image/*"
+            onChange={handleImage} />
         </Box>
         <Stack direction='row-reverse' gap={2}>
           <Button variant='contained' color='primary' onClick={handleSubmit}>Guardar</Button>
-          <Button variant='contained' color='error' onClick={handleClose}>Cancelar</Button>
+          <Button variant='contained' color='error' onClick={close}>Cancelar</Button>
         </Stack>
       </Box>
     </Modal>
