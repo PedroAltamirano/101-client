@@ -2,13 +2,14 @@ import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
-import { baseAPI } from './config/api'
+import { baseURL, baseAPI } from './config/api'
 
 import './style/actors.css'
 import BaseTable from './components/baseTable';
 import ActorForm from './components/actorForm';
 
 import { IconButton, Button } from '@mui/material';
+import Avatar from '@mui/material/Avatar';
 
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -18,6 +19,8 @@ import TableRow from '@mui/material/TableRow';
 import Stack from '@mui/material/Stack';
 
 import EditIcon from '@mui/icons-material/Edit';
+
+const getImageUrl = name => `${baseURL}uploads/${name}`
 
 const Actors = () => {
   const [actors, setActors] = useState()
@@ -77,7 +80,7 @@ const Actors = () => {
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell component="th" scope="row">
-                      {actor.img}
+                      <Avatar alt={actor.name} src={getImageUrl(actor.img)} />
                     </TableCell>
                     <TableCell>{actor.name}</TableCell>
                     <TableCell>{actor.age}</TableCell>
